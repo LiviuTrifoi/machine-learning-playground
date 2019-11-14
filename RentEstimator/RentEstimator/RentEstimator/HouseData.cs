@@ -25,9 +25,9 @@ namespace RentEstimator
         public float Latitude;
 
         [LoadColumn(6)]
-        public string Longitude;
+        public float Longitude;
 
         [LoadColumn(7)]
-        public string Price;
+        public float Price;
     }
 }

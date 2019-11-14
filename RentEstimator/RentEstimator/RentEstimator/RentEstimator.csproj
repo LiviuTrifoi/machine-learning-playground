@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.ML.Recommender.0.14.0\build\netstandard2.0\Microsoft.ML.Recommender.props" Condition="Exists('..\packages\Microsoft.ML.Recommender.0.14.0\build\netstandard2.0\Microsoft.ML.Recommender.props')" />
+  <Import Project="..\packages\Microsoft.ML.FastTree.1.2.0\build\netstandard2.0\Microsoft.ML.FastTree.props" Condition="Exists('..\packages\Microsoft.ML.FastTree.1.2.0\build\netstandard2.0\Microsoft.ML.FastTree.props')" />
   <Import Project="..\packages\Microsoft.ML.1.4.0\build\netstandard2.0\Microsoft.ML.props" Condition="Exists('..\packages\Microsoft.ML.1.4.0\build\netstandard2.0\Microsoft.ML.props')" />
   <Import Project="..\packages\Microsoft.ML.CpuMath.1.4.0\build\netstandard2.0\Microsoft.ML.CpuMath.props" Condition="Exists('..\packages\Microsoft.ML.CpuMath.1.4.0\build\netstandard2.0\Microsoft.ML.CpuMath.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -40,6 +42,36 @@
     <Reference Include="FSharp.Core, Version=4.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\FSharp.Core.4.5.2\lib\net45\FSharp.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Abstractions.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Binder, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Binder.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.Binder.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.2.1.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.ML, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.ML.1.4.0\lib\netstandard2.0\Microsoft.Extensions.ML.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.ObjectPool, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.ObjectPool.2.1.0\lib\netstandard2.0\Microsoft.Extensions.ObjectPool.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Options.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Options.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.ML.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ML.1.4.0\lib\netstandard2.0\Microsoft.ML.Core.dll</HintPath>
     </Reference>
@@ -52,14 +84,26 @@
     <Reference Include="Microsoft.ML.DataView, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ML.DataView.1.4.0\lib\netstandard2.0\Microsoft.ML.DataView.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.ML.FastTree, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ML.FastTree.1.2.0\lib\netstandard2.0\Microsoft.ML.FastTree.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ML.ImageAnalytics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ML.ImageAnalytics.1.2.0\lib\netstandard2.0\Microsoft.ML.ImageAnalytics.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.ML.KMeansClustering, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ML.1.4.0\lib\netstandard2.0\Microsoft.ML.KMeansClustering.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.ML.PCA, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ML.1.4.0\lib\netstandard2.0\Microsoft.ML.PCA.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.ML.Recommender, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ML.Recommender.0.14.0\lib\netstandard2.0\Microsoft.ML.Recommender.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.ML.StandardTrainers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ML.1.4.0\lib\netstandard2.0\Microsoft.ML.StandardTrainers.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ML.StaticPipe, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ML.StaticPipe.0.14.0\lib\netstandard2.0\Microsoft.ML.StaticPipe.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.ML.Transforms, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ML.1.4.0\lib\netstandard2.0\Microsoft.ML.Transforms.dll</HintPath>
@@ -78,6 +122,10 @@
       <HintPath>..\packages\System.Collections.Immutable.1.5.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Common, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Drawing.Common.4.5.0\lib\net461\System.Drawing.Common.dll</HintPath>
+    </Reference>
     <Reference Include="System.Memory, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.1\lib\netstandard2.0\System.Memory.dll</HintPath>
     </Reference>
@@ -124,6 +172,8 @@
     <Error Condition="!Exists('..\packages\Microsoft.ML.CpuMath.1.4.0\build\netstandard2.0\Microsoft.ML.CpuMath.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.CpuMath.1.4.0\build\netstandard2.0\Microsoft.ML.CpuMath.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.ML.1.4.0\build\netstandard2.0\Microsoft.ML.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.1.4.0\build\netstandard2.0\Microsoft.ML.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.ML.1.4.0\build\netstandard2.0\Microsoft.ML.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.1.4.0\build\netstandard2.0\Microsoft.ML.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.ML.FastTree.1.2.0\build\netstandard2.0\Microsoft.ML.FastTree.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.FastTree.1.2.0\build\netstandard2.0\Microsoft.ML.FastTree.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.ML.Recommender.0.14.0\build\netstandard2.0\Microsoft.ML.Recommender.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.Recommender.0.14.0\build\netstandard2.0\Microsoft.ML.Recommender.props'))" />
   </Target>
   <Import Project="..\packages\Microsoft.ML.1.4.0\build\netstandard2.0\Microsoft.ML.targets" Condition="Exists('..\packages\Microsoft.ML.1.4.0\build\netstandard2.0\Microsoft.ML.targets')" />
 </Project>
