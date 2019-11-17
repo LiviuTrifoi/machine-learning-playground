@@ -4,6 +4,12 @@ namespace RentEstimator
 {
     class HouseData
     {
+        [LoadColumn(2)]
+        public string Zone;
+
+        [LoadColumn(38)]
+        public float BasementSize;
+
         [LoadColumn(46)]
         public float Size;
 

@@ -20,22 +20,103 @@ namespace RentEstimator
             var mlContext = new MLContext();
             string TrainDataPath = @".\data\train.csv";
             var trainDataView = mlContext.Data.LoadFromTextFile<HouseData>(TrainDataPath, hasHeader: true, separatorChar: ',');
-            var x = trainDataView.GetColumn<float>(nameof(HouseData.Size)).Select(f => new[] { f }).ToArray();
-            var y = trainDataView.GetColumn<float>(nameof(HouseData.Price)).ToArray();
-            var result = GradientDescent(x, y);
-
+            var dataSet = PrepareData(trainDataView);
+            var result = GradientDescent(dataSet.X, dataSet.Y);
+            Console.WriteLine("Theta is: ");
+            foreach (var item in result)
+            {
+                Console.Write(item + " ");
+            }
+            Console.WriteLine();
             Evaluate(mlContext, result);
         }
+
+        public static DataSet PrepareData(IDataView dataView)
+        {
+            var x1 = Normalize(dataView.GetColumn<float>(nameof(HouseData.Size)).ToArray());
+            var x2 = MaxNormalize(dataView.GetColumn<string>(nameof(HouseData.Zone)).Select(z => ConvertZoneToWeight(z)).ToArray());
+            var x3 = Normalize(dataView.GetColumn<float>(nameof(HouseData.BasementSize)).ToArray());
+            var y = Normalize(dataView.GetColumn<float>(nameof(HouseData.Price)).ToArray());
+
+            var x = new float[x1.Length][];
+            for (int i = 0; i < x1.Length; i++)
+            {
+                x[i] = new float[] { x1[i], x2[i], x3[i] };
+            }
+
+            return new DataSet()
+            {
+                X = x,
+                Y = y
+            };
+        }
+
+        public static float[] Normalize(float[] x)
+        {
+            var xMin = x.Min();
+            var xMax = x.Max();
+            var newX = new float[x.Length];
+
+            for (int i = 0; i < x.Length; i++)
+            {
+                newX[i] = (x[i] - xMin) / (xMax - xMin);
+            }
+
+            return newX;
+        }
+
+        public static float[] MaxNormalize(float[] x)
+        {
+            var xMax = x.Max();
+            var newX = new float[x.Length];
+
+            for (int i = 0; i < x.Length; i++)
+            {
+                newX[i] = x[i] / xMax;
+            }
+
+            return newX;
+        }
+
+        public static float ConvertZoneToWeight(string zone)
+        {
+            var avgPrice = 0;
+            switch (zone)
+            {
+                case "RL":
+                    avgPrice = 191481;
+                    break;
+                case "RM":
+                    avgPrice = 125493;
+                    break;
+                case "FV":
+                    avgPrice = 212951;
+                    break;
+                case "RH":
+                    avgPrice = 131558;
+                    break;
+                default:
+                    avgPrice = 74528;
+                    break;
+            }
+
+            return avgPrice;
+        }
+
+        public class DataSet
+        {
+            public float[][] X { get; set; }
+            public float[] Y { get; set; }
+        }
+
 
         public static void Evaluate(MLContext mlContext, float[] theta)
         {
             const string TestDataPath = @".\data\test.csv";
             var trainDataView = mlContext.Data.LoadFromTextFile<HouseData>(TestDataPath, hasHeader: true, separatorChar: ',');
-            var x = trainDataView.GetColumn<float>(nameof(HouseData.Size)).Select(f => new[] { f }).ToArray();
-            var y = trainDataView.GetColumn<float>(nameof(HouseData.Price)).ToArray();
-
-            var mse = CalcMeanSquareError(theta, x, y);
-            Console.WriteLine("Result found. Mean Square Error is: {0}", mse);
+            var dataSet = PrepareData(trainDataView);
+            var mse = CalcMeanSquareError(theta, dataSet.X, dataSet.Y);
+            Console.WriteLine("Result found. Mean Square Error is: {0}", mse * 1000000);
             Console.ReadKey();
         }
 
@@ -46,7 +127,7 @@ namespace RentEstimator
             for (var i = 0; i < m - 1; i++)
             {
                 var diff = Math.Abs(Hypothesis(theta, xSets[i]) - y[i]);
-                Console.WriteLine(diff);
+                Console.WriteLine(diff * 1000000);
                 cost += diff;
             }
             cost = cost / m;
@@ -78,7 +159,9 @@ namespace RentEstimator
             //var distanceToMetro = x[1];
             //var numberOfStores = x[2];
             //float value = theta[0] + theta[1]*(1/x[0]) + theta[2]*(1/(float)Math.Sqrt(x[1])) + theta[3] * numberOfStores;
-            float value = theta[0] + theta[1] * x[0];
+
+            float value = theta[0] + theta[1] * x[0] + theta[2] * x[1];
+            //float value = theta[0] + theta[1] * x[0];
 
             return value;
         }
@@ -99,23 +182,25 @@ namespace RentEstimator
 
         public static float[] GradientDescent(float[][] xSets, float[] y)
         {
-            const float learningRate = 0.1f;
+            const float learningRate = 0.17f;
             float t0 = 0f;
             float t1 = 1f;
-            float prevCost = Int32.MaxValue;
-            float currentCost = Cost(new[] { t0, t1 }, xSets, y);
+            float t2 = 1f;
+            float t3 = 1f;
+            float currentCost = Cost(new[] { t0, t1, t2, t3 }, xSets, y);
             int maxIterations = 100000;
+
             do
             {
-                prevCost = currentCost;
-                var prevTheta = new[] { t0, t1  };
+                var prevTheta = new[] { t0, t1, t2, t3  };
                 t0 = t0 - learningRate * Delta(prevTheta, xSets, y);
                 t1 = t1 - learningRate * Delta(prevTheta, xSets, y);
-                currentCost = Cost(new[] { t0, t1  }, xSets, y);
+                t2 = t2 - learningRate * Delta(prevTheta, xSets, y);
+                currentCost = Cost(new[] { t0, t1, t2, t3  }, xSets, y);
                 maxIterations--;
-            } while (currentCost > 1 && maxIterations > 0);
+            } while (maxIterations > 0);
 
-            return new[] { t0, t1 };
+            return new[] { t0, t1, t2, t3 };
         }
 
         private static float Delta(float[] theta, float[][] xSets, float[] y)
