@@ -33,6 +33,7 @@ namespace RentEstimator
 
         public static DataSet PrepareData(IDataView dataView)
         {
+            // todo: analyze linear relationship between size in specific area vs price
             var x1 = Normalize(dataView.GetColumn<float>(nameof(HouseData.Size)).ToArray());
             var x2 = MaxNormalize(dataView.GetColumn<string>(nameof(HouseData.Zone)).Select(z => ConvertZoneToWeight(z)).ToArray());
             var x3 = Normalize(dataView.GetColumn<float>(nameof(HouseData.BasementSize)).ToArray());
