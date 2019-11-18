@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.ML;
 using Microsoft.ML.Data;
@@ -33,16 +34,17 @@ namespace RentEstimator
 
         public static DataSet PrepareData(IDataView dataView)
         {
-            // todo: analyze linear relationship between size in specific area vs price
             var x1 = Normalize(dataView.GetColumn<float>(nameof(HouseData.Size)).ToArray());
             var x2 = MaxNormalize(dataView.GetColumn<string>(nameof(HouseData.Zone)).Select(z => ConvertZoneToWeight(z)).ToArray());
-            var x3 = Normalize(dataView.GetColumn<float>(nameof(HouseData.BasementSize)).ToArray());
             var y = Normalize(dataView.GetColumn<float>(nameof(HouseData.Price)).ToArray());
+            var x3 = MaxNormalizeAvg(dataView.GetColumn<string>(nameof(HouseData.Neighborhood)).ToArray(), y);
+            var x4 = MaxNormalizeAvg(dataView.GetColumn<string>(nameof(HouseData.HouseStyle)).ToArray(), y);
+            var x5 = Normalize(dataView.GetColumn<float>(nameof(HouseData.OverallQuality)).ToArray());
 
             var x = new float[x1.Length][];
             for (int i = 0; i < x1.Length; i++)
             {
-                x[i] = new float[] { x1[i], x2[i], x3[i] };
+                x[i] = new float[] { x1[i], x2[i], x3[i], x4[i], x5[i] };
             }
 
             return new DataSet()
@@ -79,6 +81,32 @@ namespace RentEstimator
             return newX;
         }
 
+        public static float[] MaxNormalizeAvg(string[] x, float[] y)
+        {
+            var groupAvg = new Dictionary<string, SumCount>();
+            for (int i = 0; i < x.Length; i++)
+            {
+                if (!groupAvg.ContainsKey(x[i]))
+                {
+                    groupAvg[x[i]] = new SumCount();
+                }
+
+                groupAvg[x[i]].Sum += y[i];
+                groupAvg[x[i]].Count++;
+            }
+
+            
+            var maxAvg = groupAvg.Max(pair => pair.Value.Avg());
+            var newX = new float[x.Length];
+
+            for (int i = 0; i < x.Length; i++)
+            {
+                newX[i] = groupAvg[x[i]].Avg() / maxAvg;
+            }
+
+            return newX;
+        }
+
         public static float ConvertZoneToWeight(string zone)
         {
             var avgPrice = 0;
@@ -103,13 +131,6 @@ namespace RentEstimator
 
             return avgPrice;
         }
-
-        public class DataSet
-        {
-            public float[][] X { get; set; }
-            public float[] Y { get; set; }
-        }
-
 
         public static void Evaluate(MLContext mlContext, float[] theta)
         {
@@ -155,14 +176,13 @@ namespace RentEstimator
 
         public static float Hypothesis(float[] theta, float[] x)
         {
-            //float value = theta[0] + theta[1]*(1/(float)Math.Sqrt(x[0]));
-            //var distanceToCenter = x[0];
-            //var distanceToMetro = x[1];
-            //var numberOfStores = x[2];
-            //float value = theta[0] + theta[1]*(1/x[0]) + theta[2]*(1/(float)Math.Sqrt(x[1])) + theta[3] * numberOfStores;
+            float livingSize = x[0];
+            float zone = x[1];
+            float neighbourhood = x[2];
+            float buildingType = x[3];
+            float overallQuality = x[4];
 
-            float value = theta[0] + theta[1] * x[0] + theta[2] * x[1];
-            //float value = theta[0] + theta[1] * x[0];
+            float value = theta[0] + theta[1] * livingSize / 2 + theta[2] * zone / 50 + theta[3] * neighbourhood / 100 + theta[4] * buildingType / 30 + theta[5] * overallQuality / 5;
 
             return value;
         }
@@ -183,25 +203,28 @@ namespace RentEstimator
 
         public static float[] GradientDescent(float[][] xSets, float[] y)
         {
-            const float learningRate = 0.17f;
+            const float learningRate = 0.2f;
             float t0 = 0f;
             float t1 = 1f;
             float t2 = 1f;
             float t3 = 1f;
-            float currentCost = Cost(new[] { t0, t1, t2, t3 }, xSets, y);
-            int maxIterations = 100000;
+            float t4 = 1f;
+            float t5 = 1f;
+            int maxIterations = 50000;
 
             do
             {
-                var prevTheta = new[] { t0, t1, t2, t3  };
+                var prevTheta = new[] { t0, t1, t2, t3, t4, t5 };
                 t0 = t0 - learningRate * Delta(prevTheta, xSets, y);
                 t1 = t1 - learningRate * Delta(prevTheta, xSets, y);
                 t2 = t2 - learningRate * Delta(prevTheta, xSets, y);
-                currentCost = Cost(new[] { t0, t1, t2, t3  }, xSets, y);
+                t3 = t3 - learningRate * Delta(prevTheta, xSets, y);
+                t4 = t4 - learningRate * Delta(prevTheta, xSets, y);
+                t5 = t5 - learningRate * Delta(prevTheta, xSets, y);
                 maxIterations--;
             } while (maxIterations > 0);
 
-            return new[] { t0, t1, t2, t3 };
+            return new[] { t0, t1, t2, t3, t4, t5 };
         }
 
         private static float Delta(float[] theta, float[][] xSets, float[] y)
@@ -214,6 +237,23 @@ namespace RentEstimator
             }
 
             return delta / m;
+        }
+
+
+        public class DataSet
+        {
+            public float[][] X { get; set; }
+            public float[] Y { get; set; }
+        }
+
+        private class SumCount {
+            public float Sum;
+            public float Count;
+
+            public float Avg()
+            {
+                return Sum / Count;
+            }
         }
     }
 }
