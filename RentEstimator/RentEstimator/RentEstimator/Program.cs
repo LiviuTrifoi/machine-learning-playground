@@ -138,41 +138,37 @@ namespace RentEstimator
             var trainDataView = mlContext.Data.LoadFromTextFile<HouseData>(TestDataPath, hasHeader: true, separatorChar: ',');
             var dataSet = PrepareData(trainDataView);
             var mse = CalcMeanSquareError(theta, dataSet.X, dataSet.Y);
-            Console.WriteLine("Result found. Mean Square Error is: {0}", mse * 1000000);
+            Console.WriteLine("Mean Absolute Error is: {0}$", mse * 1000000);
             Console.ReadKey();
         }
 
         public static float CalcMeanSquareError(float[] theta, float[][] xSets, float[] y)
         {
             float cost = 0;
+            float accuracy = 0;
             int m = y.Length;
+            int nonZeroValues = 0;
             for (var i = 0; i < m - 1; i++)
             {
-                var diff = Math.Abs(Hypothesis(theta, xSets[i]) - y[i]);
-                Console.WriteLine(diff * 1000000);
-                cost += diff;
-            }
-            cost = cost / m;
+                if (y[i].Equals((0f)))
+                {
+                    continue;
+                }
 
+                var diff = Math.Abs(Hypothesis(theta, xSets[i]) - y[i]);
+                cost += diff;
+
+                accuracy += diff / y[i];
+                Console.WriteLine("Gap: " + diff * 1000000 + "$");
+                nonZeroValues++;
+            }
+            cost = cost / nonZeroValues;
+
+            accuracy = 100 - (accuracy / nonZeroValues) * 100;
+            Console.WriteLine("Accuracy: " + accuracy);
             return cost;
         }
 
-        public static float[] CalcDistance(float[] latitudes, float[] longitudes)
-        {
-            const float TaipeiCenterLat = 25.0339687f;
-            const float TaipeiCenterLong = 121.5622835f;
-
-            var distances = new float[latitudes.Length];
-            for (int i = 0; i < latitudes.Length; i++)
-            {
-                var latitude = latitudes[i];
-                var longitude = longitudes[i];
-
-                distances[i] = (float) Math.Sqrt(Math.Abs(latitude - TaipeiCenterLat) * 111 + Math.Abs(longitude - TaipeiCenterLong) * 111);
-            }
-
-            return distances;
-        }
 
         public static float Hypothesis(float[] theta, float[] x)
         {
